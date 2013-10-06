@@ -9,6 +9,16 @@ class MoviesController < ApplicationController
   def index
     @movies = Movie.all
     @redirect = 0
+
+    @checked = {}
+    @all_ratings = ['G','PG','PG-13','R']
+    @all_ratings.each {|rating|
+      if params[:ratings] == nil
+        @checked[rating] = true
+      else
+	@checked[rating] = params[:ratings].has_key?(rating)
+      end}
+
     if (@checked != nil)
         @movies = @movies.find_all{|m| @checked.has_key?(m.rating) and @checked[m.rating] == true}
     end
@@ -35,16 +45,6 @@ class MoviesController < ApplicationController
     if (@redirect == 1)
       redirect_to movies_path(:sort_by=>params[:sort_by], :ratings=>params[:ratings])
     end
-
-    @checked = {}
-    @all_ratings = ['G','PG','PG-13','R']
-    @all_ratings.each {|rating|
-      if params[:ratings] == nil
-        @checked[rating] = false
-      else
-	@checked[rating] = params[:ratings].has_key?(rating)
-      end
-    }
   end
 
   def new
